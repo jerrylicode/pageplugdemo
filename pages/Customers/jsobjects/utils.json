@@ -1,0 +1,16 @@
+{
+  "unpublishedCollection": {
+    "name": "utils",
+    "pageId": "Customers",
+    "pluginId": "js-plugin",
+    "pluginType": "JS",
+    "actions": [],
+    "archivedActions": [],
+    "body": "export default {\n\t\n\tidConverter: (num) => {\n\t\tlet str = num.toString();\n\t\tlet leadingZeros = \"00000\".substring(0, 5 - str.length);\n\t\treturn 'C' + leadingZeros + str;\n\t},\n\t\n\tgetCustomers: async () => {\n\t\tconst customers = await getCustomers.run();\n\n\t\treturn customers.map(c => {\n\t\t\treturn {\n\t\t\t\tID: this.idConverter(c.id),\n\t\t\t\tCustomerID: c.id,\n\t\t\t\tName: c.first_name + ' ' + c.last_name,\n\t\t\t\tPhone: c.phone,\n\t\t\t\tEmail: c.email,\n\t\t\t\tBillingAddress: `${c.address1}${ c.city || ''}${ c.country || ''}`,\n\t\t\t\tShippingAddress: `${c.address1}${ c.city || ''}${ c.country || ''}`,\n\t\t\t}\n\t\t})\n\t},\n\n\tgetCustomerOrders: async () => {\n\t\tconst customerOrders = await getCustomerOrders.run();\n\n\t\tconst data = customerOrders.map(o => {\n\t\t\treturn {\n\t\t\t\tOrderId: o.id,\n\t\t\t\tOrderDate: new Date(o.created).toDateString(),\n\t\t\t\tItems: o.order_line_count,\n\t\t\t\tAmount: o.total.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),\n\t\t\t\tStatus: o.label\n\t\t\t}\n\t\t})\n\t\t\n\t\treturn data;\n\t},\n\n\tstatusColor: (status) => {\n\t\tif (status === 'CANCELLED') {\n\t\t\treturn 'RGB(255, 0, 0)'\n\t\t};\n\t\tif (status === 'UNFULFILLED' || status === 'PACKED') {\n\t\t\treturn 'RGB(255, 165, 0)';\n\t\t};\n\t\tif (status === 'SHIPPED' || status === 'DELIVERED') {\n\t\t\treturn 'RGB(0, 128, 0)'\n\t\t}\n\t\treturn 'RGB(255, 165, 0)'\n\t},\n\t\n\taddCustomer: async () => {\n\t\tconst person = await createPerson.run()\n\t\t\n\t\tawait createAccount.run({\n\t\t\tpersonId: person[0].id\n\t\t})\n\t\t\n\t\tawait createLocation.run({\n\t\t\tpersonId: person[0].id\n\t\t})\n\t\t\n\t\tcloseModal('mdl_addCustomer');\n\t\t\n\t\tawait this.getCustomers();\n\t\t\n\t\tshowAlert('Customer created!', 'success');\n\t}\n}",
+    "variables": [],
+    "userPermissions": []
+  },
+  "id": "Customers_utils",
+  "deleted": false,
+  "gitSyncId": "64f58f816fbfd93d5cd5b5cf_64f58fc86fbfd93d5cd5b627"
+}

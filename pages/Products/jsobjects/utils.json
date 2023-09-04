@@ -1,0 +1,16 @@
+{
+  "unpublishedCollection": {
+    "name": "utils",
+    "pageId": "Products",
+    "pluginId": "js-plugin",
+    "pluginType": "JS",
+    "actions": [],
+    "archivedActions": [],
+    "body": "export default {\n\n\tidConverter: (num) => {\n\t\tlet str = num.toString();\n\t\tlet leadingZeros = \"00000\".substring(0, 5 - str.length);\n\t\treturn 'P' + leadingZeros + str;\n\t},\n\n\tgetProducts: async () => {\n\t\tconst products = await getProducts.run();\n\n\t\tconst categoryFilter = sel_category.selectedOptionValue;\n\n\t\tlet filteredProducts = products;\n\n\t\tif (categoryFilter) {\n\t\t\tfilteredProducts = products.filter(p => p.category === categoryFilter);\n\t\t}\n\n\t\treturn filteredProducts.map(p => {\n\t\t\treturn {\n\t\t\t\tID: this.idConverter(p.id),\n\t\t\t\tName: p.name,\n\t\t\t\tSKU: p.sku,\n\t\t\t\tCategory: p.category,\n\t\t\t\tUnitPrice: p.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),\n\t\t\t\tStock: p.total_stock,\n\t\t\t\tProductID: p.id,\n\t\t\t}\n\t\t})\n\t},\n\n\tgetCategories: async () => {\n\t\tconst products = await getProducts.run();\n\t\tconst categories = products.map(p => p.category);\n\t\tconst sanitisedCategories = categories.filter(category => category !== null && category.trim() !== \"\");\n\n\t\tif (!products || products.length < 1) {\n\t\t\treturn [{\n\t\t\t\tid: 1,\n\t\t\t\tname: 'Food',\n\t\t\t},\n\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\tid: 2,\n\t\t\t\t\t\t\t\tname: 'Gadget',\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t ]\n\t\t}\n\n\t\tconst uniqueCategoriesRaw = {}\n\n\t\tfor (let i = 0; i < sanitisedCategories.length; i++) {\n\t\t\t// Add each string to the object as a key with a value of true\n\t\t\tuniqueCategoriesRaw[sanitisedCategories[i]] = true;\n\t\t}\n\n\t\t// Get an array of unique strings from the object keys\n\t\tconst uniqueCategories = Object.keys(uniqueCategoriesRaw);\n\n\t\treturn uniqueCategories.map((category, index) => {\n\t\t\treturn {\n\t\t\t\tid: index,\n\t\t\t\tname: category,\n\t\t\t}\n\t\t})\n\t},\n}",
+    "variables": [],
+    "userPermissions": []
+  },
+  "id": "Products_utils",
+  "deleted": false,
+  "gitSyncId": "64f58f816fbfd93d5cd5b5cf_64f58fc86fbfd93d5cd5b629"
+}
